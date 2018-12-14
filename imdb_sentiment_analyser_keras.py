@@ -74,7 +74,7 @@ for activation in activations:
                 
                 history = model.fit(x_train_partial,
                                     y_train_partial,
-                                    epochs = 10,
+                                    epochs = 4,
                                     batch_size = 512,
                                     validation_data=(validation_x_train, validation_y_train))
                 
@@ -85,9 +85,10 @@ for activation in activations:
                 training_loss_values = hist_dict['loss']
                 training_acc_values = hist_dict['acc']
                 
-                epochs = np.arange(1,10+1)
+                epochs = np.arange(1,4+1)
                 
                 loss_fig, ax = plt.subplots(2,1, figsize=(20,10))
+                
                 plt.subplot(211)
                 plt.plot(epochs, validation_loss_values, 'b', label = 'Validation Loss')
                 plt.plot(epochs, training_loss_values, 'r', label='Training Loss')
@@ -96,12 +97,25 @@ for activation in activations:
                 plt.ylabel('Loss')
                 plt.legend()
                 
+                for i,j in zip(epochs, validation_loss_values):
+                    plt.subplot(211).annotate(str(j), xy=(i,j), arrowprops=dict(facecolor='black', shrink=0.05))
+
+                for i,j in zip(epochs, training_loss_values):
+                    plt.subplot(211).annotate(str(j), xy=(i,j), arrowprops=dict(facecolor='black', shrink=0.05))
+                
                 plt.subplot(212)
                 plt.plot(epochs, validation_acc_values, 'b', label = 'Validation Accuracy')
                 plt.plot(epochs, training_acc_values, 'r', label='Training Accuracy')
                 plt.title('Accuracy with ACTIVATION %s, LOSS FUNCTION %s, %d HIDDEN LAYERS & %d HIDDEN UNITS' % (activation, function, lyrs, units))
                 plt.xlabel('Epochs')
                 plt.ylabel('Accuracy')
+                
+                for i,j in zip(epochs, validation_acc_values):
+                    plt.subplot(212).annotate(str(j), xy=(i,j), arrowprops=dict(facecolor='black', shrink=0.05))
+
+                for i,j in zip(epochs, training_acc_values):
+                    plt.subplot(212).annotate(str(j), xy=(i,j), arrowprops=dict(facecolor='black', shrink=0.05))
+                
                 plt.legend()
                 plt.tight_layout()
                 
