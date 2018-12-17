@@ -7,10 +7,12 @@ Created on Sat Dec  8 15:05:42 2018
 
 import numpy as np
 from keras import models
+from keras.models import load_model
 from keras import layers
 from keras.datasets import imdb
 from keras import optimizers
 import matplotlib.pyplot as plt
+import operator
 
 
 # using all word freqeuncies
@@ -51,6 +53,9 @@ hidden_layer_units = [16, 32, 64]
 
 hidden_layers = [1,2,3]
 #hidden_layers = [1,2]
+
+#one metric for all models:
+metric_master = {}
 
 for activation in activations:
     for function in loss_func:
@@ -121,28 +126,7 @@ for activation in activations:
                 
                 #show model evaluation
                 results = model.evaluate(x_test, y_test)
-                
-                #make prediction and pull out a value and re-map it and show probability
-                prediction = model.predict(x_test)
-                
-                word_index = imdb.get_word_index()
-                reverse_word_index_dict = {}
-                
-                for word, index in word_index.items():
-                    reverse_word_index_dict[index] = word
-                
-                #get random number from 25000 choices, reverse it from lookup and print it
-                #test_Data is equivalent to x_test wrt to example index
-                rand_choice = np.random.choice(25000)                
-                empty_string = ''
-                for index in test_data[rand_choice]:
-                    empty_string += reverse_word_index_dict.get(index-3, '?') + ' '
-                    
-                empty_string.strip()
-                print("Accuracy of this model is: {0:.2f}%".format(results[1]*100))
-                print('A random sample is as follows: %s' % empty_string)
-                print('Based on this model this sample is : {0:.2f}% positive'.format(prediction[rand_choice][0]*100))
-                
+            
                 output_dir_graphs = r'C:\Users\karan.verma\.spyder-py3\deep-learning\graphs'
                 output_dir_models = r'C:\Users\karan.verma\.spyder-py3\deep-learning\models'
                 
@@ -151,3 +135,36 @@ for activation in activations:
                 #save the model for later use
                 model.save('{}/Model %s %s %d %d'.format(output_dir_models) % (activation, function, lyrs, units))
                 
+                s0_stt = 'Model %s %s %d %d' % (activation, function, lyrs, units)
+                metric_master[s0_stt] = results[1]*100
+                
+                #best model is ACTIVATION relu, LOSS FUNCTION mse, 1 HIDDEN LAYERS & 32 HIDDEN UNITS with 88.19% accuracy
+
+#sort model based on top accuracy and get last element
+best_model_name = sorted(metric_master.items(), key=operator.itemgetter(1))[len(metric_master)-1]
+
+best_model = load_model('{}/%s'.format(output_dir_models) % (best_model_name[0]))
+
+#get prediction matrix of this model
+prediction = best_model.predict(x_test)
+
+#get word index for testing
+word_index = imdb.get_word_index()
+reverse_word_index_dict = {}
+
+#create reverse index for testing                
+for word, index in word_index.items():
+    reverse_word_index_dict[index] = word
+
+#get random number from 25000 choices, reverse it from lookup and print it
+#test_Data is equivalent to x_test wrt to example index
+rand_choice = np.random.choice(25000)                
+empty_string = ''
+for index in test_data[rand_choice]:
+    empty_string += reverse_word_index_dict.get(index-3, '?') + ' '            
+    
+empty_string.strip()
+print("Accuracy of the best model is: {0:.2f}% \n".format(best_model_name[1]))
+print("It's parameters are %s \n" % best_model_name[0])
+print('A random sample is as follows: %s \n' % empty_string)
+print('Based on this model this sample is : {0:.2f}% positive'.format(prediction[rand_choice][0]*100))
