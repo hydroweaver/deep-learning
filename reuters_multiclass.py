@@ -72,8 +72,17 @@ for activation in activations:
             model.add(layers.Dense(64, activation = 'relu', input_shape=(10000,)))
             for i in range(lyr):
                 model.add(layers.Dense(unit, activation = activation))
-            model.add(layers.Dense(46, activation='sigmoid'))
+            #model.add(layers.Dense(46, activation='sigmoid'))
+            model.add(layers.Dense(46, activation='softmax'))
             
+            #initially ran the model with sigmoid, altough it's ideally used for binary classification
+            #and does not provide output probabilities, although also used for MNSIT which is also a multi
+            #class problem....anyway...running with sigmoid to check the out and then with softmax which
+            #should give out probabilities of the 46 classes resolved by argmax
+            
+            #with sigmoid the top accuracy is 79.16 with 128 units in a single hidden layer
+            
+            #with softmax its at 79.34 tanh 1 128
             
             model.compile(optimizer='rmsprop',
                           loss = 'categorical_crossentropy',
@@ -83,8 +92,8 @@ for activation in activations:
                                 partial_vector_train_y,
                                 epochs = e,
                                 batch_size=512,
-                                validation_data=(val_vector_train_x, val_vector_train_y),
-                                verbose=0)
+                                validation_data=(val_vector_train_x, val_vector_train_y))
+            #verbose=0
             
             #model results
             hist_dict = history.history
@@ -96,6 +105,7 @@ for activation in activations:
             
             epochs = np.arange(1, e+1)
             
+            plt.close()
             fig, ax = plt.subplots(2,1, figsize=(20,10))
             
             plt.subplot(211)
@@ -119,7 +129,6 @@ for activation in activations:
             results = model.evaluate(vector_test_x, vector_test_y)
             
             fig.savefig('{}/%s %d %d'.format(output_dir) % (activation, lyr, unit))
-            plt.clf()
     
             #save the model for later use
             model.save('{}/%s %d %d'.format(output_dir) % (activation, lyr, unit))
@@ -130,6 +139,7 @@ for activation in activations:
             print('Accuracy of this model is {0:.2f}%'.format(results[1]*100))
             
 #choose best model and write final summary
+#model_master_copy = model_master[:]
 model_master = sorted(model_master.items(), key=operator.itemgetter(1))[len(model_master)-1]
 final_model = load_model('{}\%s'.format(output_dir) % (model_master[0]))
 
