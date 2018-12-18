@@ -50,14 +50,14 @@ partial_vector_train_y, val_vector_train_y = vector_train_y[:7185], vector_train
 
 #define model and iterate on multiple
 
-#activations = ['relu', 'tanh', 'sigmoid']
-activations = ['relu', 'tanh']
+activations = ['relu', 'tanh', 'sigmoid']
+#activations = ['relu', 'tanh']
 
-#lyrs = [1, 2, 3, 4]
-lyrs = [1, 2]
+lyrs = [1, 2, 3, 4]
+#lyrs = [1, 2]
 
-#units = [16, 32, 64, 128]
-units = [16]
+units = [16, 32, 64, 128]
+#units = [16]
 
 #epochs
 e = 20
@@ -83,7 +83,8 @@ for activation in activations:
                                 partial_vector_train_y,
                                 epochs = e,
                                 batch_size=512,
-                                validation_data=(val_vector_train_x, val_vector_train_y))
+                                validation_data=(val_vector_train_x, val_vector_train_y),
+                                verbose=0)
             
             #model results
             hist_dict = history.history
@@ -112,18 +113,21 @@ for activation in activations:
             plt.legend()
             plt.tight_layout()
             
-            plt.show()
+            #plt.show()
             
             #show model evaluation
             results = model.evaluate(vector_test_x, vector_test_y)
             
-            fig.savefig('{}/%s %d %d'.format(output_dir) % (activation, lyr, unit))               
+            fig.savefig('{}/%s %d %d'.format(output_dir) % (activation, lyr, unit))
+            plt.clf()
     
             #save the model for later use
             model.save('{}/%s %d %d'.format(output_dir) % (activation, lyr, unit))
             
             s0_stt = '%s %d %d' % (activation, lyr, unit)
             model_master[s0_stt] = results[1]*100
+            print('Trained with %s activation %d hidden layers %d hidden units' % (activation, lyr, unit))
+            print('Accuracy of this model is {0:.2f}%'.format(results[1]*100))
             
 #choose best model and write final summary
 model_master = sorted(model_master.items(), key=operator.itemgetter(1))[len(model_master)-1]
@@ -146,23 +150,11 @@ news = ' '.join([reverse_word_index.get(i-3, '?') for i in random_sample])
 
 #prediction
 best_model_acc = model_master[1]
-print('The accuracy of the best model is: %f \n' % best_model_acc)
+print('\n\nThe accuracy of the best model is: %f \n' % best_model_acc)
 print('A sample is as follows: \n %s \n' % news)
 print('Predicted Label %d \n' % np.argmax(pred))
 print('Original Label %d \n' % test_y[random_number])
 print('The current model is: %s' % model_master[0])
 
-
-
-
-
-
-
-
-
-                
-            
-            
-
-
-
+#beep at the end
+#print('\a')
