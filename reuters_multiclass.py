@@ -50,17 +50,17 @@ partial_vector_train_y, val_vector_train_y = vector_train_y[:7185], vector_train
 
 #define model and iterate on multiple
 
-activations = ['relu', 'tanh', 'sigmoid']
-#activations = ['relu', 'tanh']
+#activations = ['relu', 'tanh', 'sigmoid']
+activations = ['relu', 'sigmoid']
 
-lyrs = [1, 2, 3, 4]
-#lyrs = [1, 2]
+#lyrs = [1, 2, 3, 4]
+lyrs = [1]
 
-units = [16, 32, 64, 128]
-#units = [16]
+#units = [16, 32, 64, 128]
+units = [64, 128]
 
 #epochs
-e = 20
+e = 5
 
 
 for activation in activations:
@@ -84,6 +84,7 @@ for activation in activations:
             
             #with softmax its at 79.34 tanh 1 128
             
+            
             model.compile(optimizer='rmsprop',
                           loss = 'categorical_crossentropy',
                           metrics=['accuracy'])
@@ -92,7 +93,8 @@ for activation in activations:
                                 partial_vector_train_y,
                                 epochs = e,
                                 batch_size=512,
-                                validation_data=(val_vector_train_x, val_vector_train_y))
+                                validation_data=(val_vector_train_x, val_vector_train_y),
+                                verbose=0)
             #verbose=0
             
             #model results
@@ -129,7 +131,8 @@ for activation in activations:
             results = model.evaluate(vector_test_x, vector_test_y)
             
             fig.savefig('{}/%s %d %d'.format(output_dir) % (activation, lyr, unit))
-    
+            plt.clf()
+            
             #save the model for later use
             model.save('{}/%s %d %d'.format(output_dir) % (activation, lyr, unit))
             
@@ -146,25 +149,34 @@ final_model = load_model('{}\%s'.format(output_dir) % (model_master[0]))
 #get prediction of this model
 prediction = final_model.predict(vector_test_x)
 
-#get a random number within the range of test samples
-random_number = np.random.choice(len(vector_test_x))
+#changing prediction to a function for easiness
+def pred():
+    #get a random number within the range of test samples
+    random_number = np.random.choice(len(vector_test_x))
 
-#get random sample from original test table
-random_sample = test_x[random_number]
+    #get random sample from original test table
+    random_sample = test_x[random_number]
 
-#prediction of the same random sample from model.predict
-pred = prediction[random_number]
+    #prediction of the same random sample from model.predict
+    pred = prediction[random_number]
 
-#build sample using reverse index
-news = ' '.join([reverse_word_index.get(i-3, '?') for i in random_sample])
+    #build sample using reverse index
+    news = ' '.join([reverse_word_index.get(i-3, '?') for i in random_sample])
 
-#prediction
-best_model_acc = model_master[1]
-print('\n\nThe accuracy of the best model is: %f \n' % best_model_acc)
-print('A sample is as follows: \n %s \n' % news)
-print('Predicted Label %d \n' % np.argmax(pred))
-print('Original Label %d \n' % test_y[random_number])
-print('The current model is: %s' % model_master[0])
+    #prediction
+    best_model_acc = model_master[1]
+    print('\nThe accuracy of the best model is: %f' % best_model_acc)
+    print('\nA sample is as follows: \n %s \n' % news)
+    print('\nPredicted Label %d \n' % np.argmax(pred))
+    print('\nOriginal Label %d' % test_y[random_number])
+    print('\nThe current model is: %s' % model_master[0])
+
+#run prediction 5 times
+for i in range(5):
+    print('\nPrediction %d' % (i+1))
+    print('//////////////////////////////////////////////////////////////////')
+    pred()
+    print('------------------------------------------------------------------')
 
 #beep at the end
 #print('\a')
