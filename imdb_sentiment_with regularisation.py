@@ -7,10 +7,10 @@ This is a temporary script file.
 
 #initially run with no L2 regularizer, now with l2 = 0.001
 
-#Without regularization test data evaluation : 16 units [0.8112427774882317, 0.84612] 4 units [0.4251603396511078, 0.86644] 512 units [0.9472465605561435, 0.87]
-#   With regularization test data evaluation : 16 units [0.4665150016975403, 0.86312] 4 units [0.3792718832683563, 0.87156] 512 units [0.47489984335422514, 0.87348] major reduction in loss on test data
-
-
+#Without L2 regularization test data evaluation : 16 units [0.8112427774882317, 0.84612] 4 units [0.4251603396511078, 0.86644] 512 units [0.9472465605561435, 0.87]
+#   With L2 regularization test data evaluation : 16 units [0.4665150016975403, 0.86312] 4 units [0.3792718832683563, 0.87156] 512 units [0.47489984335422514, 0.87348] major reduction in loss on test data
+#   With L1 regularization test data evaluation : 16 units [0.485685515127182, 0.87044] 4 units [0.43256368284225466, 0.86312] 512 units [2.962592507019043, 0.86816] 512 model completely useless, 16 and 4 relatively similar performance and acc 
+#With L1/L2 regularization test data evaluation : 16 units [0.48758635732650757, 0.87032] 4 units [0.437683063287735, 0.86224] 512 units [2.94838287399292, 0.87736] pretty much the same as above with only l1 regularization
 from keras import models
 from keras import layers
 from keras import regularizers
@@ -55,7 +55,7 @@ val_y = train_y[15000:]
 #create model big and small and then compile and run
 for i in range(3):
     model = models.Sequential()
-    model.add(layers.Dense(lyrs[i], kernel_regularizer=regularizers.l2(0.001), activation = 'relu', input_shape = (10000,)))
+    model.add(layers.Dense(lyrs[i], kernel_regularizer=regularizers.l1_l2(l1=0.001, l2=0.001), activation = 'relu', input_shape = (10000,)))
     model.add(layers.Dense(lyrs[i], activation = 'relu'))
     model.add(layers.Dense(1, activation='sigmoid'))
     
