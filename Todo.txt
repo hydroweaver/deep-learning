@@ -1,0 +1,3 @@
+Tensor serve or flask for website and api
+
+https://stackoverflow.com/questions/17031660/matplotlib-how-do-you-keep-the-axes-constant-while-adding-new-data
