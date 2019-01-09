@@ -55,9 +55,9 @@ val_y = train_y[int(len(train_y)*0.75):]
 #units_out = [512, 256, 128, 64, 32, 16]
 #units_in = [128, 64, 32, 16]
 
-lyrs = [1, 2, 3]
-units_out = [16, 64, 512]
-units_in = [16, 64, 128]
+lyrs = [1]
+units_out = [512]
+units_in = [128]
 
 #make model
 for lyr in lyrs:
