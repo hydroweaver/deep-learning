@@ -17,21 +17,27 @@ train_dir = r'C:\Users\hydro\Downloads\dogs-vs-cats-small\train\cats'
 
 imgs = [os.path.join(train_dir, i) for i in os.listdir(train_dir)]
 
-train_datagen = ImageDataGenerator(rescale=1./255, rotation_range=90)
+train_datagen = ImageDataGenerator(rescale=1./255)
+
+orig_to_array = np.zeros((20, 50, 50, 3), dtype = 'float32')
 
 for i in range(20):
-    val = random.choice(imgs)
-    orig = image.load_img(val, target_size = (150, 150))
-    orig_to_array = image.img_to_array(orig)
-    orig_to_array_reshape = np.reshape(orig_to_array, (1,)+orig_to_array.shape)
-    print(i)
-    for x in train_datagen.flow(orig_to_array_reshape, batch_size = 1):
-        plt.figure(i)
-        x1 = plt.imshow(image.array_to_img(x[0]))
-        print(x.shape)
-        break
+    val = imgs[:20]
+    orig = image.load_img(val[i], target_size = (50, 50))
+    orig_to_array[i, :, :, :] = image.img_to_array(orig)
+    #orig_to_array_reshape = np.reshape(orig_to_array, (20,)+orig_to_array.shape)
 
-plt.show()
+save_dir = r'C:\Users\hydro\Downloads\New folder'
+i = 0    
+for x in train_datagen.flow(orig_to_array, batch_size = , save_to_dir = save_dir):
+    i += 1
+    if i == 20:
+        break
+    # i is the images it will take from the directory, independent, based on orig_to_array
+    # batch_size is the number of ops done on each
+    # so 20 images with 10 ops each
+    #I THINK THATS IT...but well !
+
     
     
 
